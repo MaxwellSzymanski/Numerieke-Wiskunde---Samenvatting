@@ -1,0 +1,838 @@
+\documentclass[11pt]{report}
+\usepackage{tikz}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{ulem}
+\usepackage{algorithm2e}
+% Spaced operators
+\def \eq {\hspace{1.5mm}=\hspace{1.5mm}}
+\def \noteq {\hspace{1.5mm}\neq\hspace{1.5mm}}
+\def \lesseq {\hspace{1.5mm}\leqslant\hspace{1.5mm}}
+\def \less {\hspace{1.5mm}<\hspace{1.5mm}}
+\def \lrarrow {\hspace{1.5mm}\Leftrightarrow \hspace{1.5mm}}
+\def \LRA {\Leftrightarrow\hspace{1.5cm}}
+\def \appx {\hspace{1.5mm}\approx \hspace{1.5mm}}
+\def \hmid {\hspace{1.5mm}\mid \hspace{1.5mm}}
+\def \h {\hspace{2mm}}
+\def \H {\hspace{1cm}}
+\def \hm {\hspace{1mm}}
+\def \plus {\hspace{1mm}+\hspace{1mm}}
+\def \v {\vspace{2mm}}
+\def \R {\mathbb{R}}
+\def \F {\mathcal{F}}
+\newcommand{\msout}[1]{\text{\sout{\ensuremath{#1}}}}
+\def \updown {$$\Updownarrow$$}
+
+\newcommand{\rect}[1]{%
+  \tikz[baseline=(char.base)]\node[anchor=south west, draw,rectangle, rounded corners, inner sep=2pt, minimum size=7mm,
+    text height=2mm](char){\ensuremath{#1}} ;}
+    
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+
+\begin{document}
+
+%    -----------------------
+%    |    HOODFSTUK 1      |
+%    -----------------------
+\chapter{Foutenanalyse}
+\section{Foutmeting}
+	Stel dat $x$ de exacte waarde is, en $\bar{x}$ de benadering van van de exacte waarde, dan is de:
+	\begin{itemize}
+		\item Absolute fout: $\Delta x = \bar x - x$
+		\item Relatieve fout: $\delta x = \frac{\bar x - x}{x}$ 
+	\end{itemize}
+	De absolute fout is echter betekenisloos zonder context, en er wordt vaker naar de relatieve fout gekeken.
+	
+\section{Klassieke voorstelling van getallen}
+	Elk getal $x$ kan voorgesteld worden als:
+	$$x \eq \pm \left(c_n \h c_{n-1} \dots c_0 . c_{-1} \h c_{-2} \h c_{-3} \dots\right)_b$$
+	Als $c_n = c_{n-1} = \dots = c_{k+1} = 0$ en $c_k \neq 0$, dan noemt men de cijfers $c_n$, $c_{n-1}$, \dots, $c_{k+1}$ leidende nullen. Het cijfer $c_k$ wordt het eerste beduidende cijfer genoemd. Alle volgende cijfers $c_{k-1}$, $c_{k-2}$, \dots zijn ook beduidende cijfers.
+		
+	Wanneer $c_k$ het eerste beduidende cijfer is, dan geldt:
+	\begin{equation}
+		b^k \lesseq \mid x \mid \less b^{k+1}
+	\end{equation}
+	Dus de index $l$ van het eerste beduidende cijfer bevat informatie over de grootte van een getal $x$.
+		
+\section{Bewegende kommavoorstelling van een getal}
+	Elk getal $x$ kan voorgesteld worden als:
+	$$x \eq \pm\h y \h.\h b^e$$
+	 \hspace*{8.5mm}met \h $y$ \hspace{1.4mm} de mantisse\\
+	 \hspace*{17mm} $b$ \hspace{1.4mm} de basis\\
+	 \hspace*{17mm} $e$ \hspace{1.4mm} de exponent\\
+	 \hspace*{17mm} $b^e$ \hspace{0mm} de schaalfactor\\
+	 Om de voorstelling uniek te maken, wordt de schaalfactor $b^e$ zo gekozen dat $y = (c_0 \h . \h c_{-1} \h c_{-2} \h c_{-3})_b$ en $c_0 \neq 0$ (als $x \neq 0$). Dit is de \textit{genormaliseerde bewegende kommavoorstelling}.
+	 
+	 \subsection{Juiste cijfers}
+	 We noemen het cijfer $\bar c_i$ van $\bar x$ een \textbf{juist cijfer} t.o.v. de exacte waarde $x$ als:
+	 $$\mid x - \bar x \mid \eq \mid \Delta x \mid \lesseq \frac{1}{2}b^i$$
+	 \subsection*{Eigenschappen}
+	 	\begin{itemize}
+	 		\item Als $\bar c_i$ een juist cijfer is van de benadering $\bar x$, dan zijn $\bar c_{i+1}$, $\bar c_{i+2}$, \dots ook juiste cijfers.
+	 		\item Als $\bar c_i$ een juist cijfer is, dan geldt:
+	 		\begin{itemize}
+	 			\item $\bar x \in [x - \frac{1}{2}b^i, x + \frac{1}{2}b^i]$
+	 			\item $x \in [\bar x - \frac{1}{2}b^i, \bar x + \frac{1}{2}b^i]$
+	 		\end{itemize}
+	 		\item Als $\bar c_{j+1}$ het laatste juiste cijfer is, dan is $\bar c_j$ geen juist cijfer meer en geldt: $\frac{1}{2} b^j \less \mid \bar x - x \mid \lesseq \frac{1}{2} b^{j+1}$
+	 		\item Als $\bar c_{\bar n}$ het eerste cijfer is van $\bar x$ en $\bar c_{j+1}$ het laatste cijfer, dan is het \textit{aantal juiste cijfers} gelijk aan $\max(0, \bar n - j)$.
+	 	\end{itemize}
+	 \subsection*{Afronden en juiste cijfers}
+	 TODO
+	\subsection{Het verband tussen de relatieve fout en het aantal juiste beduidende cijfers}
+	 Neem een benaderend getal $\bar x$:
+	 $$\bar x \eq \pm (\bar c_k \h \bar c_{k-1} \h \dots \h \bar c_{j+1} \h \bar c_j \h \dots)_b$$
+	 \hspace*{8.5mm}met \h $\bar c_k$ \hspace{5mm} het eerste beduidende cijfer\\
+	 \hspace*{17mm} $\bar c_{j+1}$ \hspace{1.4mm} het laatste juiste cijfer\\
+	 Het \textit{aantal juiste cijfers} is dan gelijk aan $q = k - j$. Omdat $\bar c_k$ het eerste beduidende cijfer is, geldt:
+	 \begin{equation}
+	 	b^k \lesseq \mid \bar x \mid \less b^{k+1} \lrarrow b^{-k-1} \less \frac{1}{\mid \bar x \mid} \lesseq b^{-k}
+	 \end{equation}
+	 Omdat $\bar c _{j+1}$ het laatste juiste cijfer is, geldt:
+	 \begin{equation}
+	 	\frac{1}{2} b^j \less \mid \bar x - x \mid \lesseq \frac{1}{2} b^{j+1}
+	 \end{equation}
+	 Neem deze twee uitdrukkingen samen:
+	 \begin{equation}
+	 	\frac{1}{2} b^{-k+j-1} \less \frac{\mid \bar x - x \mid}{\bar x} \lesseq \frac{1}{2} b^{-k+j+1}
+	 \end{equation}
+	 \begin{equation}
+	 	\lrarrow q - 1 \lesseq \log_b\frac{1}{2}\left| \frac{\bar x}{\bar x - x}\right| \less q + 1
+	 \end{equation}
+	 \begin{equation}
+	 	\lrarrow q \appx \log_b \left(\frac{1}{2}\bigg|\frac{\bar x}{\bar x - x} \bigg| \right )
+	 \end{equation}
+	 Als $\bar x \approx x$, dan wordt de uitdrukking herleid tot $q \approx \log_b\left(\frac{1}{2\mid \delta x\mid}\right)$.
+	 
+	\subsection{Voorstelling van getallen in computersystemen}
+	\subsection*{De functie $fl$}
+		Een getal $x \in \R$ kan enkel benaderd voorgesteld worden door een computersysteem, met $p$ beduidende cijfers verschillend van 0 in de mantisse. We nemen aan dat afronden gebruikt wordt:
+		$$fl: \h \R \to \F: \h x \mapsto fl(x)$$
+		Deze functie geeft als resultaat de bewegende kommavoorstelling van $x$, afgerond op $p$ beduidende cijfers. D.w.z. dat $fl(x)$ minstens $p$ juiste beduidende cijfers heeft. Omdat voor het aantal juiste beduidende cijfers $q$ geldt dat 
+		$$\frac{1}{2}b^{-q-1} \less \left|\frac{fl(x) - x}{fl(x)}\right| \lesseq \frac{1}{2}b^{-q+1}$$
+		Hieruit volgt dat:
+		$$\left|\frac{fl(x) - x}{fl(x)}\right|\lesseq \frac{1}{2}b^{-q+1}\lesseq \boxed{\frac{1}{2}b^{-p+1} \eq \varepsilon_{mach}}$$
+		Dit kan men schrijven als:
+		$$x \eq fl(x) (1 + \varepsilon) \h\h \text{met}\h |\varepsilon|\lesseq \varepsilon_{mach}$$ 
+		Omdat er geldt dat $(1 + \varepsilon)^{-1} = 1 - \varepsilon $, kan men $fl(x)$ schrijven als:
+		$$fl(x) \eq x\frac{1}{1 + \varepsilon} \appx x(1 - \varepsilon)$$
+		Aangezien men naar de relatieve absolute fout kijkt, kan men de term $(1-\varepsilon)$ ook schrijven als $(1+\varepsilon')$ met $\varepsilon' = -\varepsilon$ :
+		$$\boxed{fl(x) \eq x(1 + \varepsilon') \h\h \text{met} \h |\varepsilon'| \lesseq \varepsilon_{mach}}$$
+		Deze formule vormt de basis van de foutenanalyse voor een algoritme uitgevoerd op een computersysteem.
+		\begin{itemize}
+			\item Als $|x| > M, fl(x) = \pm \infty$ waarbij het teken bepaald wordt door het teken van $x$. Er wordt een \textit{overflow flag} gezet.
+			\item Als $0 < |x| < m, fl(x) = \pm 0$ waarbij het teken bepaald wordt door het teken van $x$. Er wordt een \textit{underflow flag} gezet.
+			\item Er geldt: $fl(0) = 0$.
+		\end{itemize}
+	\subsection{Elementaire bewerkingen op een computersysteem}
+		We nemen aan dat $x, y \in \F$, dan geldt:
+		$$x \oplus y \eq fl(x + y) \eq (x + y)(1 + \varepsilon_+)$$
+		$$x \ominus y \eq fl(x - y) \eq (x - y)(1 + \varepsilon_-)$$
+		$$x \otimes y \eq fl(x \times y) \eq (x \times y)(1 + \varepsilon_\times)$$
+		$$x \oslash y \eq fl(x \div y) \eq (x \div y)(1 + \varepsilon_\div)$$
+		Dit wilt dus zeggen dat elke elementaire bewerking een fout $\varepsilon$ introduceert die kleiner is dan (of gelijk aan) de machineprecisie $\varepsilon_{mach}$. Als bijvoorbeeld het uitrekenen van $\sin(x)$ zo ge\"{i}mplementeerd is dat men het kan opvatten als een primitieve functie, dan geldt:
+	 	$$\rect{\sin}(x) \eq fl(\sin(x)) \eq \sin(x)(1 + \varepsilon_{\sin})$$
+	 	Merk op dat hier geldt: $|\varepsilon_+|$, $|\varepsilon_-|$, $|\varepsilon_\times|$, $|\varepsilon_\div|$, $|\varepsilon_{\sin}| \leqslant \varepsilon_{mach}$ 
+	 	
+	 \subsection*{Foutenanalyse van een sommatie-algoritme}
+	 	Neem een algoritme die de volgende waarde berekent en teruggeeft: $s = \sum_{i = 1}^n a_i$ voor $n$ getallen, met $a_i \in \F$. Het is belangrijk om te weten hoe het algoritme is ge\"{i}mplementeerd. Neem voor dit voorbeeld het volgende:
+	 	TODO ALGORITME
+	 	De berekende waarde $\bar s$ is dan:
+	 	\begin{align*}
+	 		\bar s &\eq fl(\dots fl(fl(a_1 + a_2) + a_3) \dots + a_n)\\
+	 		&\eq (\dots ((a_1 + a_2) (1 + \varepsilon_2) + a_3)(1 + \varepsilon_3) + \dots + a_n)(1+\varepsilon_n)\\
+	 		&\eq (a_1 + a_2)(1 + \varepsilon_2)(1 + \varepsilon_3) + \dots + (1 + \varepsilon_n)\\
+	 		& \hspace{8mm} + \hspace{20mm} a_3 (1 + \varepsilon_3) + \dots + (1 + \varepsilon_n)\\
+	 		& \hspace{8mm} + \h \dots \h  + \hspace{34mm} a_n (1 + \varepsilon_n)\\
+	 		& \appx (a_1 + a_2)(1 + \varepsilon_2 + \varepsilon_3 + \dots + \varepsilon_n)\\
+	 		& \hspace{8mm} + \hspace{6mm} a_3 \hspace{0.8mm}(1 + \hspace{8.3mm}\varepsilon_3 + \dots + \varepsilon_n)\\
+	 		& \hspace{8mm} + \h \dots \h  + \hspace{19mm} a_n (1 + \varepsilon_n)
+	 	\end{align*}
+	 	Waarbij er in de laatste stap de hogere orde termen (bv. $\varepsilon_i^2$, $\varepsilon_i\varepsilon_j$, \dots) worden weggelaten, aangezien de fout $\varepsilon_i$ op een machine met een precisie van 16 cijfers van de grootteorde 16 of kleiner is, en deze hogere orde termen dus van grootteorde 32 of kleiner (verwaarloosbaar). Hieruit volgt:
+	 	\begin{align*}
+	 		\bar s - s \appx &\varepsilon_2(a_1 + a_2) \\
+	 		 +\h &\varepsilon_3 (a_1 + a_2 + a_3) \\
+	 		 +\h &\dots \varepsilon_n(a_1 + a_2 + a_3 + \dots + a_n)
+	 	\end{align*}
+	 	Aangezien voor alle $\varepsilon_i$ geldt dat $\varepsilon_i \leqslant \varepsilon_{mach}$, kunnen we de volgende ongelijkheid beschouwen:
+	 	$$|\bar s - s| \lesseq \Bigl( |a_1 + a_2| + |a_1 + a_2 + a_3| + \dots + |a_1 + a_2 + a_3 + \dots a_n|\Bigr)\varepsilon_{mach}$$
+	 	Als alle getallen $a_i$ positief zijn:
+	 	$$|\bar s - s| \lesseq \Bigl( (n-1)(a_1 + a_2) + (n-2)a_3 + (n-3)a_4 + \dots + 1.a_n\Bigr)\varepsilon_{mach}$$
+	 	Hieruit besluiten we dat de bovengrens voor de absolute fout klein gemaakt kan worden door de getallen te sommeren van klein naar groot.
+
+	\subsection{Verschillende soorten fouten}
+		\begin{itemize}
+			\item \textbf{Afrondingsfouten}: elk getal wordt afgerond naar het dichtstbijzijnd computergetal door de functie $fl(x) = x(1 + \varepsilon)$ met $|\varepsilon| \leqslant \varepsilon_{mach}$
+			\item \textbf{Inherente of ge\"{i}nduceerde fouten}: gegevens die met slechts een eindige precisie gekend zijn (conditie van het numeriek probleem).
+			\item \textbf{Afbrekings- of discretisatiefouten}: een computer kan slechts eindige berekeningen doen. Sommige wiskundige bewerkingen zoals  bijvoorbeeld de integraal moeten dan benaderd worden a.d.h.v. een eindige som.
+			$$\int_a^b f(x)dx \eq \sum ^N_{k=0} f(x_k) . w_k + I$$
+			Hierbij is $x_k$ de gediscretiseerde waarde van $x$.
+		\end{itemize}
+		\subsection*{Inherente fouten bij optelling}
+		Inherente of ge\"{i}nduceerde fouten op exacte gegevens zorgen uiteraard voor fouten op resultaten. Neem twee exacte gegevens $x$ en $y$, en als gewenst resultaat de som van de twee getallen, $s = x + y$. Indien er op die getallen een fout staat, worden ze voorgesteld met een streep erboven:
+		\begin{align*}
+			\bar x \eq x + \Delta x && \bar y \eq y + \Delta y
+		\end{align*}
+		Dan geldt voor de som:
+		\begin{align*}
+			\bar s  &\eq (x + \Delta x) + (y + \Delta y)\\
+			   & \eq s + (\Delta x + \Delta y)
+		\end{align*}
+		De \textit{absolute fout op de som} is dan:
+		\begin{equation}
+			\Delta s \eq \bar s - s \eq \Delta x + \Delta y
+		\end{equation}
+		De \textit{relatieve fout op de som} wordt gegeven door:
+		\begin{equation}
+			\delta s \eq \frac{\Delta s}{s} \eq \frac{\Delta x + \Delta y}{x + y}
+		\end{equation}
+		Merk op dat $|\delta s|$ zeer groot kan worden als $s = x + y \approx 0$ oftewel $x \approx y$. Dit noemt men \textit{catastrophic cancellation}. Dit wilt echter niet zeggen dat de fout in absolute waarde zeer groot word. Neem als voorbeeld een functie $f(x) = x$ en een functie die op elke waarde $x$ een constante fout $10^{-8}$ toevoegt, dus $\bar f(x) = \bar x = f(x) + 10^{-8}$. Hoewel de absolute fout (gegeven door $\bar x - x = x + 10^{-8} - x = 10^{-8}$) constant is, dus de berekende waarde in zowel 0 als 1 als elk ander punt even veel verschilt van de echte waarde, is de relatieve fout niet overal gelijk (gegeven door $\delta x = \frac{10^{-8}}{x}$). Dit wordt geplot in \ref{fig:relfout}.
+		\begin{figure*}[h]
+			\centering
+			\includegraphics[height=5cm]{Images/RelativeError}
+			\caption{De relatieve fout gegeven door $\delta x = 10^{-8} / x$}
+			\label{fig:relfout}
+		\end{figure*}
+		
+	\subsection*{Inherente fouten bij vermenigvuldiging}
+		Neem nu als resultaat de vermenigvuldiging van twee getallen, $p = x . y$. De relatieve fouten op $x$ en $y$ zijn:
+		\begin{align*}
+			\bar x \eq x(1 + \delta x) && \bar y \eq y(1 + \delta y)
+		\end{align*}
+		Het resultaat van de gegevens $\bar x$ en $\bar y$ is:
+		\begin{align*}
+			\bar p & \eq \bar x . \bar y \\
+			&\eq x(1 + \delta x) . y(1+\delta y)\\
+			&\eq xy(1 + \delta x + \delta y + \delta x . \delta y)\\
+			&\appx p(1 + \delta p)
+		\end{align*}
+		met $\delta p \approx \delta x + \delta y$.
+		TODO Foutvoortplanting
+	\section{Conditie van een numeriek probleem}
+		Als een wiskundig verband tussen de gegevens $g$ en het resultaat $r$ exact is (d.w.z. dat het in oneindige precisie uitgerekend kan worden), wordt dit genoteerd als $r = F(g)$. De \textit{conditie} van een numeriek probleem zegt iets over hoe kleine veranderingen of perturbaties $\Delta x$ op een gegeven $x$ het resultaat be\"{i}nvloeden. Beschouw alle mogelijke perturbaties kleiner dan $\varepsilon$ op een gegeven $g$ (de grijze cirkel in \ref{fig:conditie}), en alle resultaten van de verzameling van perturbaties op $g$. \\
+		\begin{figure*}[h]
+			\centering
+			\frame{\includegraphics[height=5cm]{Images/Conditie}}
+			\caption{De conditie van een numeriek probleem}
+			\label{fig:conditie}
+		\end{figure*}
+		De \textit{absolute conditie} zegt nu wat de grootst mogelijke absolute fout op het resultaat is, $||\Delta r||$ indien men de grootst mogelijke perturbatie beschouwt op het gegeven, $||\Delta g||$. Dit wordt uitgedrukt als:
+		$$\sup_{\Delta ||g|| \leqslant \varepsilon} \frac{||\Delta r||}{||\Delta g||}$$
+		Het \textit{absoluut conditiegetal} geeft dan de verhouding tussen de fout op het resultaat en de fout op de gegevens indien de perturbatie op de gegevens zeer klein wordt. Aangezien de perturbatie kleiner moet zijn dan $\varepsilon$, kunnen we de limiet van $\varepsilon \to 0$ nemen om de perturbatie infinitesimaal klein te maken. Dus geldt:
+		\begin{equation}
+			\kappa_A(F, g) \eq \lim_{\varepsilon \to 0} \left(\sup_{\Delta ||g|| \leqslant \varepsilon} \frac{||\Delta r||}{||\Delta g||}\right)
+		\end{equation}
+		Het \textit{relatief conditiegetal} wordt gegeven door:
+		\begin{equation}
+			\kappa_R(F, g) \eq \lim_{\varepsilon \to 0} \left(\sup_{\delta ||g|| \leqslant \varepsilon} \frac{||\delta r||}{||\delta g||}\right)
+		\end{equation}
+		Indien $F(g)$ een differentieerbare functie is in \'{e}\'{e}n of meer veranderlijken, kunnen de conditiegetallen ook geschreven worden als:
+		\begin{align}
+			\kappa_A(F, g) \eq ||F'(g)|| & & \kappa_R(F, g) \eq ||F'(g)|| \cdot \frac{||g||}{||r||}
+		\end{align}
+		
+		waarbij $F'(g)$ de Jacobiaan is, gedefinieerd als:
+		$$J \eq \begin{bmatrix}
+    				\frac{\partial F}{\partial x_1} & \dots & \frac{\partial F}{\partial x_n}
+  				\end{bmatrix}
+  				\eq
+  				\begin{bmatrix}
+    				\frac{\partial F_1}{\partial x_1} & \dots & \frac{\partial F_1}{\partial x_n} \\
+    				\vdots & \ddots & \vdots \\
+    				\frac{\partial F_m}{\partial x_1} & \dots & \frac{\partial F_m}{\partial x_n} \\
+  				\end{bmatrix} \hspace{7mm} \text{met}\h J_{ij} =\frac{\partial f_i}{\partial x_j}$$
+  		Een conditiegetal zegt dus hoe gevoelig de resultaten zijn voor perturbaties van de gegevens. Een kleine $\kappa$ zegt dus dat het probleem \textit{goed geconditioneerd} is, oftewel weinig gevoelig aan veranderingen in de gegevens. Merk op dat het hier gaat over de conditie van een numeriek probleem (de mapping van gegevens naar hun resultaat gegeven door $F$), en dit niet afhankelijk is van de algoritmische implementatie van het probleem.\\\\
+	\textbf{\underline{Voorbeeld:}} evalueren van $f(x, y) = x^2 - y^2$\\
+		De gegevens zijn $g = (x, y)$, en de resultaten $r = F(g) = f(x, y)$. De perturbaties op de gegevens	zijn $\Delta g = (\Delta x, \Delta y)$ met als eenheidsnorm $||\Delta g||_1 = |\Delta x| + |\Delta y|$, en zorgen voor een absolute fout op de resultaten $\Delta r$ gegeven door:
+		\begin{align*}
+			\Delta r &\eq  f(x + \Delta x, y + \Delta y) - f(x, y) \\
+			&\appx f(x, y) + \frac{\partial f(x, y)}{\partial x}. \Delta x + \frac{\partial f(x, y)}{\partial y}. \Delta y - f(x, y)\\
+			&\appx 2x . \Delta x - 2y . \Delta y\\
+			&\eq \begin{bmatrix}2x & -2y\end{bmatrix} \begin{bmatrix}\Delta x \\ \Delta y\end{bmatrix}
+		\end{align*}
+		Het absoluut conditiegetal is dan:
+		$$\kappa_A \eq \lim_{\varepsilon \to 0} \left( \sup_{||\Delta g|| \leqslant \varepsilon}\left(\frac{|2x\Delta x - 2y\Delta y|}{|\Delta x| + | \Delta y|}\right)\right)$$
+		
+		en het relatief conditiegetal:
+		\begin{align*}
+			\kappa_R &\lesseq \lim_{\varepsilon \to 0} \left( \sup_{||\Delta g|| \leqslant \varepsilon}\left(\frac{||(2x,- 2y)||_1.\msout{||(\Delta x, \Delta y)||_1}. ||(x, y)||_1}{\msout{||(\Delta x, \Delta y)||_1} |x^2 -y^2|}\right)\right)\\
+			&\lesseq \frac{2(|x| + |y|)^2}{x^2-y^2}
+		\end{align*}
+		Dit is dus een slecht geconditioneerd probleem als $x \approx y$: het relatief conditiegetal wordt dan zeer groot.
+		
+	\section{Stabiliteit van een algoritme}
+		Bij de conditie van een numeriek probleem was het algoritme dat gebruikt werd voor het probleem niet van belang. Algoritmes zorgen echter voor afrondings- en discretisatiefouten van het resultaat bovenop de ge\"{i}nduceerde fouten op de gegevens, die niet verwaarloosd mogen worden. 
+		\begin{itemize}
+			\item We vertrekken van de exacte gegevens $g$ die een exact resultaat $r$ geven met behulp van de mapping $F$ in oneindige precisie.
+			\item Die exacte gegevens worden omgezet naar computergetallen. Dit zijn dan inexacte gegevens $\bar g$ die in oneindige precisie naar $\bar r$ gemapt worden door $F$.
+			\item Nu moet $F$ ook omgezet worden naar een numeriek algoritme. De eerste stap is het discretiseren van het numeriek probleem (bv. een integraal met eindige sommen benaderen). De mapping $\tilde F$ zet de computergetallen om naar $\tilde r$ met discretisatiefouten.
+			\item Ten slotte moet het algoritme $\tilde F$ nog in eindige precisie ge\"{i}mplementeerd worden, wat voor afrondingsfouten zorgt. Het uiteindelijk algoritme $\bar F$ zet $\bar g$ om in $\bar{\tilde r}$.
+		\end{itemize}
+		Op dit resultaat zit nu een ge\"{i}nduceerde fout, discretisatiefout en afrondingsfout. \textit{Numerieke stabiliteit} meet de afrondingsfout die gemaakt wordt door het implementeren van $\tilde F$ in eindige precisie (waar de conditie een maatstaf was voor de ge\"{i}nduceerde fout).
+	\subsection{Voorwaartse of sterke stabiliteit}
+		Een algoritme is voorwaarts stabiel als het numeriek berekend resultaat weinig verschilt van het echt resultaat. Sterke stabiliteit voor de absolute fout is:
+		$$||\bar F(\bar g) - \tilde F(\bar g)||$$
+		en voor de relatieve fout:
+		$$\frac{||\bar F(\bar g) - \tilde F(\bar g)||}{||\tilde F(\bar g)||}$$
+		Indien deze klein zijn, is het algoritme \textit{voorwaarts stabiel}.
+	\subsection{Achterwaartse stabiliteit}
+		Bij achterwaartse stabiliteit kijkt men naar hoe groot de afwijking op de gegevens mag zijn om hetzelfde resultaat te bekomen. Neem twee niet-exacte gegevens $\bar g$ en $\bar{\bar g}$ waarvoor geldt dat $\bar F(\bar g) = \tilde F(\bar{\bar g}) = \bar{\tilde r}$. Als er geldt dat:
+		$$\frac{||\bar{\bar g} - \bar g||}{||\bar g||} \appx \varepsilon_{mach}$$
+		dan wilt dit zeggen dat het algoritme \textit{achterwaarts stabiel} is, en dat de (eventueel) grote afwijkingen op het resultaat kan liggen aan een slecht geconditioneerd probleem.
+		Indien er geldt dat:
+ 		$$\frac{||\bar{\bar g} - \bar g||}{||\bar g||} \h\gg \h \varepsilon_{mach}$$
+ 		dan is het algoritme niet achterwaarts stabiel is.
+ 	\subsection{Zwakke stabiliteit}
+ 		Indien een algoritme zwak stabiel is, geldt:
+ 		$$\frac{||\bar{\bar r} - \tilde r||}{||\bar{\tilde r} - \tilde r||} \appx 1$$
+ 		Indien een algoritme niet zwak stabiel is, geldt:
+ 		$$\frac{||\bar{\bar r} - \tilde r||}{||\bar{\tilde r} - \tilde r||} \h\gg\h 1$$
+ 		\\\\
+ 		\textbf{\underline{Voorbeeld:}} evalueer $f(x)= \frac{1 - \cos(x)}{x^2}$ voor $x \appx 0$.\\
+ 		Neem aan dat er geen discretisatiefouten aanwezig zijn ($\tilde f(x) = f(x)$ en $\tilde x = x$). We voeren eerst de conditieonderzoek uit:
+ 		$$\kappa_R \eq \left|\frac{f'(x) . x}{f(x)} \right| \eq \left|\frac{2 - \sin(x).x - 2\cos(x)}{\cos(x) - 1} \right|$$
+ 		Dit berekend voor de waarde $x \to 0$:
+ 		$$\lim_{x \to 0} \kappa_R (x) \eq 0$$
+ 		Deze is dus zeer klein, en het probleem is goed geconditioneerd voor $x \approx 0$. Als we nu de stabiliteitsonderzoek uitvoeren, beginnend bij zwakke stabiliteit:
+ 		\begin{align*}
+ 			\bar f(x) &\eq \frac{(1 - \cos(x)(1 + \varepsilon_1))(1 + \varepsilon_2)}{x^2(1+\varepsilon_3)}(1+\varepsilon_4)\\
+ 			&\appx \left( \frac{1 - \cos(x)}{x^2}\right) + \varepsilon_1\left(\frac{-\cos(x)}{x^2} \right) + (\varepsilon_2 - \varepsilon_3 + \varepsilon_4)\left(\frac{1 - \cos(x)}{x^2} \right)
+ 		\end{align*}
+ 		\updown
+ 		$$\frac{\bar f(x) - f(x)}{f(x)} \appx \varepsilon_1 \left( \frac{-\cos(x)}{x^2}\right)\left(\frac{x^2}{1 - \cos(x)}\right) + (\varepsilon_2 - \varepsilon_3 + \varepsilon_4)$$
+ 		\updown
+ 		$$\left|\frac{\bar f(x) - f(x)}{f(x)} \right| \lesseq \left(\left|\frac{\cos(x)}{1 - \cos(x)}\right| + 3\right)\varepsilon_{mach}$$
+ 		Voor $x \approx 0$ geldt dat $\cos(x) \approx 1$ en dus wordt de noemer $1 - \cos(x) \approx 0$. Bij de laatste ongelijkheid wordt de bovengrens dus zeer groot, en is dit numeriek probleem hierdoor niet zwak stabiel.
+
+ 		  EINDE HOOFDSTUK: Nog extra notities van de les.
+				
+		\begin{align}
+			\delta f(x) \eq \frac{\Delta f(x)}{f(x)} &\appx \frac{f'(x) . \Delta x}{f(x)}\\
+			&\appx \frac{f'(x) . x}{f(x)}. \frac{\Delta x}{x}
+		\end{align}
+		Hier is de term voor de maal de vermenigvuldigingsfactor op de fout van het gegeven (relatieve fout).
+		Er is een norm $||g||_G$ nodig in de gegevensverzameling $G$ (en voor de resultatenverzameling $R$). Deze norm moet kleiner zijn dan $\varepsilon$, dan krijgen we een verzameling rond een gegeven met alle mogelijke licht gewijzigde gegevens. Dan gaan we van al deze gegevens het overeenkomstig resultaat bekijken (dit is opnieuw een verzameling). Dan beschouwen we in deze begrensde resulatenverzameling de grootst mogelijke afstand tussen twee elementen in die verzameling. Dit is het \textit{conditiegetal}. Als deze groot is (groot is hier ook relatief) ... \\
+		De norm van de Jacobiaan moet genomen worden bij een functie in meerdere veranderlijken.
+		$$(x + y)(1 + \varepsilon_+) \eq x(1 + \varepsilon_+) + y(1 + \varepsilon_+)$$
+		Alle bewerkingen zijn dus achterwaarts stabiel in de computer, maar toch kunnen grote fouten  voorkomen door de foute conditie.
+		
+		EXTRA: fout bij $2\frac{sin(\frac{1}{2}x)^2}{x^2}$
+		$$\frac{(1 + \varepsilon_{\sin})(1 + \varepsilon_{kwad})}{(1 + \varepsilon_2)}(1 + \varepsilon_1) \eq (1 + \varepsilon_{\sin} + \varepsilon_{kwad} + \varepsilon_1 - \varepsilon_2)$$
+		Dus goed geconditioneerd.
+		
+%    -----------------------
+%    |    HOODFSTUK 2      |
+%    -----------------------
+\chapter{Stelsels lineaire vergelijkingen}
+	Voor stelsels lineaire vergelijkingen van de vorm:
+	\begin{equation*}
+		\begin{cases}
+			
+			a_{11}x_1 + a_{12}x_2 + \dots + a_{1n}x_n = b_1 \\
+			a_{12}x_1 + a_{22}x_2 + \dots + a_{2n}x_n = b_2 \\
+			\hspace{5mm}\vdots \hspace{12mm} \vdots \hspace{10mm} \vdots \hspace{10mm} \vdots \\
+			a_{i1}x_1 + a_{i2}x_2 + \dots + a_{in}x_n = b_i \\
+			\hspace{5mm}\vdots \hspace{12mm} \vdots \hspace{10mm} \vdots \hspace{10mm} \vdots \\
+			a_{n1}x_1 + a_{n2}x_2 + \dots + a_{nn}x_n = b_n 
+		\end{cases}
+	\end{equation*}
+	
+	waarbij $a_{ij}$ en $b_i$ gegeven zijn voor $i, j = 1, 2, \dots, n$ en $x_j$ een onbekende, is de complexiteit voor het berekenen de onbekenden van grootte-orde $\mathcal{O}(n^3)$. Deze kan echter verlaagd worden als er gebruik gemaakt wordt van bepaalde eigenschappen van het stelsel.
+	
+%    -----------------------
+%    |    HOODFSTUK 3      |
+%    -----------------------
+
+\chapter{Veelterminterpolatie}
+	Dit hoofdstuk gaat over het zoeken van een functie $f$ dat door de punten punten $(x_k, f_k)$ gaat, met $k = 0, 1, \dots, n$. Dus er moet gelden dat $f(x_k) = f_k$. Er zijn uiteraard oneindig veel functies, maar als restrictie nemen we dat $f$ een veelterm moet zijn. Deze zijn eenvoudig te evalueren, differenti\"{e}ren en integreren. De veelterm $p(x)$ heeft $n+1$ interpolatievoorwaarden (punten waar $p$ door moet gaan), en is van graad $n$:
+	\begin{equation}\label{veelterm}
+		p(x) \eq a_0 + a_1x + a_2x^2\dots + a_nx^n
+	\end{equation}
+	De co\"{e}ffici\"{e}nten $a_i$ moeten zo bepaald worden dat de veelterm in elke $x_i$ evalueert tot $f_i$. Dit kan expliciet geschreven worden als een stelsel van $n+1$ vergelijkingen in $n+1$ onbekenden:
+	\begin{align*}
+		a_0 \h+\h a_1x_0 \h+\h a_2x_0^2 \h+\h \dots \h+\h a_nx_0^n \eq f_0 \\
+		a_0 \h+\h a_1x_1 \h+\h a_2x_1^2 \h+\h \dots \h+\h a_nx_1^n \eq f_1 \\
+		\vdots\hspace{3.7cm}\\
+		a_0 \h+\h a_1x_n \h+\h a_2x_n^2 \h+\h \dots \h+\h a_nx_n^n \eq f_n
+	\end{align*}
+	In matrixvorm kan men dit schrijven als $V.a = f$:
+	\begin{equation*}
+		\begin{bmatrix}
+			1 & x_0 & x_0^2 & \dots & x_0^n\\
+			1 & x_1 & x_1^2 & \dots & x_1^n\\
+			\vdots & \vdots & \vdots & \ddots & \vdots \\
+			1 & x_n & x_n^2 & \dots & x_n^n\\
+		\end{bmatrix} 
+		\begin{bmatrix}
+			a_0 \\ a_1 \\ \vdots \\ a_n
+		\end{bmatrix}
+		\eq
+		\begin{bmatrix}
+			f_0 \\ f_1 \\ \vdots \\ f_n
+		\end{bmatrix}
+	\end{equation*}
+	
+	waarbij $V$ een Vandermonde-matrix is. Deze heeft als eigenschap dat zijn determinant gelijk is aan:
+	\begin{align*}
+		\det V &\eq \prod_{\substack{1 \hspace{0.6mm}\leqslant\hspace{0.6mm} k \hspace{0.6mm}\leqslant\hspace{0.6mm} n \\ j \hspace{0.6mm}<\hspace{0.6mm} k}} (x_k - x_j)\\
+		&\eq  (x_1 - x_0).\\
+		& \hspace{8mm} (x_2 - x_0)(x_2 - x_1).\\
+		&\hspace{8mm}(x_3 - x_0)(x_3 - x_1)(x_3 - x_2).\\
+		&\hspace{8mm}\dots\\
+		&\hspace{8mm}(x_n - x_0)(x_n - x_1)\dots(x_n - x_{n-1})
+	\end{align*}
+	Deze is verschillend van nul als $x_i \neq x_j$, met $i \neq j$. De matrix is dan \textit{singulier}. Dit wilt zeggen dat de \textit{interpolerende veelterm bestaat en uniek is}. Het vinden van de veelterm heeft een complexiteit van $O(n^3)$ indien men de methode van Gauss toepast. \v\\Bij het ontwerpen van een interpolerende veelterm ontstaan er echter twee problemen: het co\"{e}ffici\"{e}ntenprobleem, en het waardeprobleem.
+\section{Co\"{e}ffici\"{e}ntenprobleem}
+	Er geldt dat $p(x) \in P_n$, waarbij $P_n$ gedefinieerd is als:
+	$$P_n \eq \{p(x) \hmid \deg p(x) \leqslant n \}$$
+	Dit is een vectorruimte van dimensie $n+1$, dus met een basis bestaande uit $n+1$ veeltermen, met elementen van de vorm $p(x) = a_0 + a_1x + \dots + a_nx^n$. Het \textit{co\"{e}ffici\"{e}ntenprobleem} gaat vooral over het vinden van een veelterm, en niet zozeer de waarde ervan in $x$. Men kan de vectorruimte van veeltermen van graad $n$ veralgemenen naar een ruimte met basis $\{\phi_i(x)\}_{i=0}^n$. Dan zijn de veeltermen van de vorm:
+	$$y_n \eq c_0 \phi_0(x) + c_1\phi_1(x) + \dots + c_n\phi_n(x)$$
+	Het probleem bestaat nu uit het zoeken naar de co\"{e}ffici\"{e}nten $\{c_k\}_{i=0}^n$ ten opzichte van de basis $\{\phi_i\}$. Als men bijvoorbeeld $\phi_k(x) = x^k$ neemt, dan zijn de co\"{e}ffici\"{e}nten $c_k = a_k$ en wordt het probleem herleidt naar \ref{veelterm}. Een paar andere basissen zijn:
+	\begin{align*}
+		\phi_k(x) &\eq (x - x_0)^k \\
+		\phi_k(x) &\eq (x - x_0)(x - x_1) \dots (x-x_{k-1}) \\
+		\phi_k(x) &\eq (x - x_0)(x - x_1) \dots (x - x_{k-1})(x - x_{k+1})\dots (x-x_n)
+	\end{align*}
+	
+\subsection{Conditie van het co\"{e}ffici\"{e}ntenprobleem}
+	In matrixvorm kan het co\"{e}ffici\"{e}ntenprobleem veralgemeend worden tot:
+	\begin{equation*}
+		\begin{bmatrix}
+			\phi_0(x_0) & \phi_1(x_0) & \dots & \phi_n(x_0)\\
+			\phi_0(x_1) & \phi_1(x_1) & \dots & \phi_n(x_1)\\
+			\vdots  & \vdots & \ddots & \vdots \\
+			\phi_0(x_n) & \phi_1(x_n) & \dots & \phi_n(x_n)\\
+		\end{bmatrix} 
+		\begin{bmatrix}
+			c_0 \\ c_1 \\ \vdots \\ c_n
+		\end{bmatrix}
+		\eq
+		\begin{bmatrix}
+			f_0 \\ f_1 \\ \vdots \\ f_n
+		\end{bmatrix}
+	\end{equation*}
+	Het probleem, alsook de (relatieve) conditie, is dus afhankelijk van het oplossen van het stelsel. Het stelsel is ook afhankelijk van de gekozen basis. Neem als basis de machten van $x$, dan is de matrix een Vandermonde-matrix. Indien de afstanden tussen de interpolatiepunten $x_i$ klein worden, wordt de determinant klein. Dit kan dan wijzen op een slechte conditie. De conditie is dus $\kappa(V)$.
+
+\subsection{Stabiliteit van het co\"{e}ffici\"{e}ntenprobleem}
+	Het oplossen van een stelsel brengt geen discretisatiefouten teweeg. Er moet dus enkel rekening gehouden worden met afrondingsfouten.
+	
+\section{Waardeprobleem}
+	Bij het waardeprobleem wilt men, voor de gegevens $(x_k, f_k = f(x_k))$ en een $\bar x$, een goede benadering voor $f(\bar x)$ in de vorm van $y_n(\bar x)$. Hiervoor gebruikt men een \textit{interpolatieproces}, waarbij de toenemende graad van $y_i(\bar x)$ naar de uiteindelijke $f(\bar x)$ zou moeten convergeren (in het ideale geval).
+	
+\subsection{Conditie van het waardeprobleem}
+	De conditie zegt hoe goed dat de waarde $f(\bar x)$ benaderd wordt. Bij discontinue functies kan de conditie oneindig slecht worden. We beperken ons tot de klasse van veeltermen voor de bespreking van conditie, aangezien deze afhankelijk is van de gebruikte functieklasse. \v\\
+	Indien het verschil tussen $\tilde y(\bar x)$ en $y(\bar x)$ groot is, zegt men dat het probleem slecht geconditioneerd is.
+	
+\subsection{Stabiliteit van het waardeprobleem}
+	De totale absolute fout $|f(\bar x) - y_n(\bar x)|$ wordt veroorzaakt door
+	\begin{itemize}
+		\item \textit{interpolatiefouten}: deze neemt af naarmate het aantal gebruikte punten (of de graad $i$ van $y_i(x)$) stijgt.
+		\item \textit{afrondingsfouten}: deze neemt toe naarmate de graad stijgt en er meer en meer berekeningen gemaakt moeten worden, en de fouten zich voortplanten.
+	\end{itemize} 
+	Hierdoor ontstaat er een optimale interpolatiegraad $n$ waardoor de totale fout minimaal wordt, en $f(\bar x)$ het best benaderd wordt.
+	\begin{center}
+		\includegraphics[height=4cm]{Images/TotaleFout}
+	\end{center}
+\section{De interpolatiefout}
+	De interpolatiefout wordt gegeven door:
+	\begin{equation}
+		E_n(x) \eq \frac{f^{(n+1)}(\xi(x))}{(n+1)!}(x-x_0)(x-x_1) \dots (x-x_n)
+	\end{equation}
+	Indien er enkel sprake is van een interpolatiefout, is het verband tussen $f$ en $y_n$:
+	$$f(x) = y_n(x) + E_n(x) \h\text{ met } x \in [a, b]$$
+	Hier is $\xi$ een getal in het interval $[\min(x_i), \max(x_i)]$, maar omdat deze afhankelijk is van de gekozen waarde $x$ waarin men interpoleert, noteert men dit vaak als $\xi(x)$.\v\\
+	Omdat de formule zo weinig bruikbaar is, wordt deze vaak gebruikt als bovengrens voor de maximale fout:
+	\begin{equation}
+		|f(x) - P_n(x)| \lesseq \frac{\max\left(|f^{(n+1)}(\xi)|\right)}{(n+1)!}\max\left(|(x-x_0)\dots(x-x_n)| \right)
+	\end{equation}
+	
+\section{Interpolerende veelterm volgens Lagrange}
+	Bij de Lagrangemethode wordt als basis $\{l_i(x)\}$ genomen, waarbij $\deg l_i(x) = n$, en voor de co\"{e}ffici\"{e}nten $\{f_i\}$. De \textit{interpolerende veelterm volgens Lagrange} is dan:
+	\begin{equation}
+		y_n(x) \eq l_0(x)f_0 \plus l_1(x)f_1 \plus \dots \plus l_n(x)f_n
+	\end{equation}
+	Om aan de \textit{interpolatie-eis} $y_n(x_i) = f_i$ te voldoen, moet er gelden dat:
+	\begin{equation*}
+		l_i(x_j) \eq 
+		\begin{cases}
+			1 \h\text{als } i = j \\
+			0 \h\text{als } i \neq j 
+		\end{cases}
+	\end{equation*}
+	De definitie van $l_i(x_j)$ is dus gelijk aan dat van de Kronecker-delta $\delta_{ij}$. De Kronecker-delta is echter geen 'functie', dus wordt $l_i$ als volgt gedefinieerd:
+	\begin{equation*}
+		l_i(x) \eq c_i \hm\frac{(x-x_0)(x-x_1)\dots(x-x_n)}{(x-x_i)}
+	\end{equation*}
+	Uit de voorwaarde $l_i(x_i) = 1$ halen we de waarde van $c_i$:
+	$$l_i(x_i) \eq 1 \eq c_i\hm \frac{(x_i-x_0)(x_i-x_1)\dots(x_i - x_i)\dots(x_i-x_n)}{(x_i-x_i)}$$
+	\updown
+	$$c_1 \eq \frac{1}{(x_i-x_1)\dots(x_i-x_{i-1})(x_i - x_{i+1})\dots (x_i-x_n)}$$
+	Definieer nu:
+	\begin{align*}
+		\pi(x) &\eq (x - x_1)(x - x_2) \dots (x - x_n)\\
+		\pi'(x_i) & \eq (x_i - x_1)\dots(x_i - x_{i-1})(x_i - x_{i+1})\dots (x_i - x_n)
+	\end{align*}
+	Hieruit volgt de formule voor de \textit{Lagrange-veelterm}:
+	\begin{equation}
+		l_i(x) \eq \frac{\pi(x)}{\pi'(x_i)(x-x_i)} \left(\eq \prod^n_{\substack{j = 0\\ j \neq i}} \frac{(x - x_j)}{(x_i - x_j)} \right)
+	\end{equation}
+	Voor het evalueren van de veelterm in een punt $x$ kunnen we het volgend algoritme gebruiken.
+	\begin{center}
+	\begin{algorithm}[H]
+		\SetAlgoLined
+		\SetKwInOut{Input}{Invoer}
+		\SetKwInOut{Output}{Uitvoer}
+		\Input{$x_0, \dots, x_n$ ; $f_0, \dots, f_n$ ; $x$}
+		\Output{$y_n(x)$}
+		$y_n(x) \leftarrow 0$ \;
+		\For{$ i = 0, 1, \dots, n$}{
+			$t \leftarrow f_i$ \;
+			\For{$j = 0, 1, \dots, n$}{
+				\If{$j \neq i$}{
+					$t \leftarrow t \cdot \frac{x - x_j}{x_i - x_j}$
+				}
+			}
+		$y_n(x) \leftarrow y_n(x) + t$
+		}
+	\end{algorithm}
+	\end{center}
+	Het algoritme heeft een complexiteit van $\mathcal{O}(n^2)O + \mathcal{O}(n^2)V$.
+\subsection{Lagrange veeltermen voor equidistante punten}
+	Voor equidistante punten geldt: $x_k = x_0 + k\cdot h$, met $h$ de afstand tussen twee opeenvolgende punten. We voeren een nieuwe veranderlijke $u$ in:
+	$$u(x) \eq \frac{x - x_0}{h}$$
+	De Lagrange veeltermen worden gegeven door
+	\begin{equation}
+		\tilde l_i(u) \eq l_i(x) \eq \frac{u(u-1)(u-2)\dots(u-i+1)(u-i-1)\dots(u-n)}{i(i-1)(i-2)\dots(1)(-1)\dots(i-n)}
+	\end{equation}
+	
+	en de interpolatiefout door
+	\begin{equation}
+		E_n(x) \eq \frac{u(u-1)\dots(u-n)}{(n+1)!}h^{n+1}f^{(n+1)}(\xi(x))
+	\end{equation}
+\subsection{Nut van de Lagrange veeltermen}
+	Indien de $x_i$ onveranderd blijven, blijven ook de $l_i(x)$ ongewijzigd. Men moet de interpolerende veelterm dus in de praktijk maar \'{e}\'{e}n keer evalueren. Het toevoegen van een punt zal er echter voor zorgen dat er een nieuwe term $l_{n+1}(x)f_{n+1}$ toegevoegd moet worden, en alle voorgaande termen herberekend moeten worden. De Lagrangemethode is dus geschikt voor het co\"{e}ffici\"{e}ntenprobleem, maar niet voor het waardeprobleem (interpolatieproces).
+	
+\section{Interpolerende veelterm volgens Newton}
+	Als basis voor $P_n$ nemen we nu
+	\begin{equation}
+		\phi_k(x) \eq (x-x_0)(x-x_1)\dots(x-x_{k-1})
+	\end{equation}
+	Het co\"{e}ffici\"{e}ntenprobleem $[\phi_j(x_i)][c_j] = [f_i]$ ziet er als volgt uit:
+	\begin{equation}
+		\begin{bmatrix}
+			1 & 0 & 0 & \dots & 0 \\
+			1 & (x_1 - x_0) & 0 & \dots & 0 \\
+			1 & (x_2 - x_0) & (x_2-x_0)(x_2-x_1)&\dots &0\\
+			\vdots & \vdots & \vdots & \ddots & \vdots\\
+			1 & (x_n - x_0) & (x_n-x_0)(x_n-x_1)&\dots &(x_n-x_0)(x_n - x_{n-1})\\
+		\end{bmatrix}
+		\begin{bmatrix}
+			c_1\\c_2\\c_3\\\vdots\\c_n
+		\end{bmatrix} \eq 
+		\begin{bmatrix}
+			f_0\\f_1\\f_2\\\vdots\\f_n
+		\end{bmatrix}
+	\end{equation}
+	Merk op dat $[\phi_j(x_i)]$ een onderdriehoeksmatrix is dat met \textit{voorwaartse substitutie} opgelost kan worden in $\mathcal O(n^2)$ tijd.
+	TODO
+	
+\section{Gedeelde differenties}
+	Gedeelde differenties worden als volgt gedefinieerd:
+	\begin{align*}
+		&0^{\text{de}}\text{ orde: } &f[x_i] \eq f_i\\
+		&1^{\text{e}}\text{ orde: } &f[x_i, fx_{i+1}] \eq \frac{f_{i+1} - f_i}{x_{i+1} - x_i} \h\left(=\h \frac{f[x_{i+1}] - f[x_i]}{x_{i+1} - x_i} \right) \\
+		&(j-i)^{\text{de}}\text{ orde: } &f[x_i, x_{i+1}, \dots, x_j] \eq \frac{f[x_{i+1}, \dots, x_j] - f[x_i, \dots, x_{j-1}]}{x_j - x_i}\\
+	\end{align*}
+	
+	De co\"{e}ffici\"{e}nten $c_i$ van de Newton-veeltermen zijn dus gebaseerd op de eerste $x_i$ punten, en worden gegeven door:
+		$$c_i \eq f[x_0, x_1, \dots, x_i]$$
+	
+%    -----------------------
+%    |    HOODFSTUK 4      |
+%    -----------------------
+\chapter{Numerieke Integratie}
+	Neem de functie $f(x)$ waarvan we de integraal numeriek gaan benaderen. Neem de Lagrangevoorstelling van $f(x)$, hieruit gaan we de \textit{kwadratuurformule} 4.1 afleiden.
+	\begin{alignat}{2}	
+		&& f(x) &\eq y_n(x) \plus E_n(x) \nonumber\\
+		\LRA && f(x) &\eq \sum_{k=0}^n l_k(x)f(x_k) \plus E_n(x) \nonumber\\
+		\LRA && \int_a^b f(x)dx &\eq \int_a^b \left(\sum_{k=0}^n l_k(x)f(x_k) \right)dx \plus \int_a^b E_n(x)dx \nonumber\\
+		\LRA && \int_a^b f(x)dx &\eq \sum_{k=0}^n \left(\int_a^b l_k(x)dx \right)f(x_k) \plus F_n \nonumber\\
+		\LRA && \int_a^b f(x)dx &\eq \sum_{k=0}^n H_kf(x_k) \plus F_n
+	\end{alignat} 
+	\begin{align*}
+		\text{met \h} H_k &: \text{gewichten}\hspace{6cm} \\
+		x_k &: \text{abscissen} \\
+		F_n &: \text{integratiefout}
+	\end{align*}
+	
+\section{Conditie}
+	Indien we een kleine fout $\varepsilon(x)$ op de integrand $f(x)$ aanbrengen, geldt er:
+	$$\int_a^b \left(f(x) + \varepsilon(x)\right)dx \eq \int_a^b f(x)dx \plus \int_a^b \varepsilon(x)dx$$
+	De wijziging op het resultaat is dan ook relatief klein, namelijk:
+	$$\int_a^b \varepsilon(x)dx$$
+	Grafisch kan dit als volgt voorgesteld worden. De conditie van het integratieprobleem is dus veel beter dan dat van de differentiatieprobleem.
+
+	\begin{center}
+		\includegraphics[height=4cm]{Images/Integratiefout}
+	\end{center}
+	
+\section{Stabiliteit}
+	De stabiliteit hangt af van
+	\begin{itemize}
+		\item de afbrekings- of discretisatiefout: hier de integratiefout $F_n$.
+		\item de afrondingsfouten bij het berekenen van $\sum H_if_i$
+	\end{itemize}
+	TODO
+	
+\section{Integratiefout}
+	De integratiefout werd in de afleiding van 4.1 gegeven door:
+	$$F_n \eq \int_a^b E_n(x)dx \eq \int_a^b \frac{f^{(n+1)}(\xi(x))}{(n+1)!}(x-x_0)\dots(x-x_n)dx$$
+	Voor $n=1$, $x_0 = a$ en $x_1 = b$ geldt er:
+	$$\hspace{1cm}F_1 \eq \frac{1}{12} f''(\eta)(b-a)^3\h, \hspace{1cm} \eta \in (a, b)$$
+	Voor \textit{equidistante abscissen} kan men de volgende formules gebruiken:
+	\begin{equation}\label{evenintegratiefout}
+		\H F_n \eq \frac{f^{(n+2)}(\eta)}{(n+2)!}\int_a^b x.\pi(x)dx\H n\text{ even}
+	\end{equation}
+	\begin{equation}
+		\hspace{1.1cm}F_n \eq \frac{f^{(n+1)}(\eta)}{(n+1)!}\int_a^b \pi(x)dx \H n\text{ oneven}
+	\end{equation}
+	
+
+\section{Nauwkeurigheidsgraad}
+	Een kwadratuurformule heeft nauwkeurigheidsgraad $n$ als
+	\begin{itemize}
+		\item alle veeltermen van graad $\leqslant n$ exact ge\"{i}ntegreerd worden.
+		\item er minstens \'{e}\'{e}n veelterm van graad $n+1$ bestaat die niet exact ge\"{i}ntegreerd wordt.
+	\end{itemize}
+	Dit begrip heeft enkel zin wanneer de functies een veeltermachtig verloop hebben. De integraal opsplitsen in deelintegralen kan de nauwkeurigheidsgraad doen stijgen.
+	
+	Bij een even $n$ zegt de term $f^{(n+2)}(\eta)$ in \ref{evenintegratiefout} dat de kwadratuurformule een nauwkeurigheidsgraad heeft van $n+1$, oftewel dat elke veelterm van graad $n+1$ exact ge\"{i}ntegreerd wordt, terwijl deze bij de oneven $n$ slecht van graad $n$ is.
+	
+\chapter{Iteratieve methoden}
+	\begin{itemize}
+		\item $x^*$: \hspace{4.3mm} exacte oplossing
+		\item $x^{(0)}$: \hspace{3.7mm}startwaarde
+		\item $x^{(k+1)}$: de $k+1^e$ benadering afhankelijk van de $k$ vorige benaderingen.
+		\begin{itemize}
+			\item $x^{(k+1)} = F_{k+1}(x^{(0)}, x^{(1)}, \dots, x^{(k)})$
+		\end{itemize}
+		\item $F_k$: \hspace{6mm}de iteratieformule
+	\end{itemize}
+	Het stopcriterium is dat $x^{(k)}$ een voldoende goede benadering is voor $x^*$. De benaderingen $x^{(0)}, x^{(1)}, \dots, x^{(k)}, \dots$ convergeren naar $x^*$
+	
+%    -----------------------
+%    |    HOODFSTUK 6      |
+%    -----------------------
+\chapter{Oplossen van niet-lineaire vergelijkingen}
+	Gegeven is een functie $f: D \subset \R \to \R$. We zoeken nu \'{e}\'{e}n of meerdere waarden voor $x$ zodat $f(x) = 0$. Er geldt dan voor een $(n+1)$-voudig nulpunt dat:
+	$$f(x^*) \eq \frac{df(x^*)}{dx} \eq \frac{d^{(n)}f(x^*)}{dx^n} \eq 0 \H\text{en}\H \frac{d^{(n+1)}f(x^*)}{dx^{n+1}} \noteq 0$$
+	Indien $n=0$, dan spreekt men over een enkelvoudig nulpunt.
+	
+	De efficientie van iteratieve methodes wordt bepaald door:
+	\begin{itemize}
+		\item het aantal functie-evaluaties (en of men ook afgeleiden moeten berekenen).
+		\item het aantal iteratiestappen.
+	\end{itemize}
+	
+\section{Bissectiemethode}
+	\underline{\textbf{Vereisten}}
+	\begin{itemize}
+		\item $f$ is continu in het interval $[a, b]$ dat we gaan bekijken.
+		\item $f(a)f(b) < 0$, dan kan men met zekerheid zeggen dat er een nulpunt is in dat interval.
+	\end{itemize}
+	Indien $f(a)f(b) > 0$, kan $f$ nog steeds nulpunten hebben in dat interval, maar dan zijn het nulpunten met een even meervoudigheid, een even aantal nulpunten met een oneven meervoudigheid of een combinatie van de twee.\v\\
+	\underline{\textbf{Methode}}\\
+	Bij elke iteratiestap wordt het onzekerheidsinterval door 2 gedeeld (lineaire complexiteit, robuust maar traag). Neem $x^{(0)} = a$, $x^{(1)} = b$, dan is:
+	$$x^{(2)} = \frac{x^{(0)} + x^{(1)}}{2}$$
+	Zij $f_2 = f(x^{(2)})$, dan zijn er 3 mogelijke gevallen:
+	\begin{itemize}
+		\item $f_2 = 0$: \hspace{3.3mm}dan is $x^{(2)} = x^*$ (komt zelden voor).
+		\item $f_2f_0 < 0$: dan bevat het half zo groot interval $[x^{(0)}, x^{(2)}]$ de wortel.
+		\item $f_2f_1 < 0$: dan bevat het half zo groot interval $[x^{(1)}, x^{(2)}]$ de wortel.
+	\end{itemize}
+	Merk op dat de punten niet allemaal bijgehouden moeten worden aangezien enkel het laatste punt nodig is en ook vaak het nauwkeurigst.\v\\ 
+	\underline{\textbf{Stopcriterium}}\\
+	Wanneer de lengte van het interval $|x^{(k+1)} - x^{(k)}| < 2 \varepsilon$.\v\\ 
+	\underline{\textbf{Hoeveelheid rekenwerk}}\\
+	Slechts 1 functie-evaluatie per iteratiestap.
+	
+\section{Secant-methode (lineaire interpolatie)}
+	\underline{\textbf{Vereisten}}\\
+	Een interpolerende eerstegraadsveelterm van de vorm:
+	$$y_{10} \eq f_1 + (x - x^{(1)})\frac{f_1 - f_0}{x^{(1)} - x^{(0)}} \h\left(\eq f_1 + (x - x^{(1)})f[x^{(0)}, x^{(1)}]\right)$$
+	Ook mag er maar een nulpunt zijn tussen de beginwaarden $x^{(0)}$ en $x^{(1)}$.
+	\underline{\textbf{Methode}}\\
+	Het nulpunt van de interpolerende veelterm is:
+	\begin{equation}\label{secant}
+		x^{(k+1)} \eq x^{(k)} - \frac{x^{(k)} - x^{(k-1)}f_k}{f_k - f_{k-1}}
+	\end{equation}
+	Dit is van de vorm:
+	$$x^{(k+1)} \eq F(x^{(k-1)}, x^{(k)})$$
+	\underline{\textbf{Stopcriterium}}\\
+	Men is nu niet zeker dat $x^*$ tussen $x^{(k-1)}$ en $x^{(k)}$ ligt. Dat $|x^{(k)} - x^{(k-1)}| < \varepsilon$ wilt nu niet zeggen dat ook $|x^{(k)} - x^*| < \varepsilon$. Problemen met de secantmethode zijn:
+	\begin{itemize}
+		\item Er kan divergentie optreden na een bepaalde iteratie. 
+		\item Als $f_{k-1}$ en $f_k$ bijna dezelfde waarde hebben, wordt de noemer in \ref{secant} bijna 0 en $x^{(k+1)}$ kan dan buiten het domein van de functie vallen.
+		\item Als $x^{(k+m)} = x^{(k)}$ en $x^{(k+m+1)} = x^{(k+1)}$, dan zal de methode in een oneindige lus terecht komen.
+	\end{itemize}
+	Men legt daarom een grens $K_{max}$ op het aantal iteratiestappen.
+	
+\section{Regula falsi methode}
+	\underline{\textbf{Vereisten}}
+	\begin{itemize}
+		\item Combineert de lineaire interpolatie van de secant-methode, en het zekerheidsinterval waar de wortel in zit van de bissectiemethode.
+		\item Enkel voor wortels met oneven meervoudigheid.
+	\end{itemize}
+	\underline{\textbf{Methode}}\\
+	Men gebruikt de secant-stap voor het bepalen van $x^{(k+1)}$:
+	$$x^{(k+1)} \eq x^{(k)} - \frac{f(x^{(k)})(x^{(k)}-x^{(k-1)})}{f(x^{(k)}) - f(x^{(k-1)})}$$
+	Er zijn dan 3 mogelijkheden:
+	\begin{itemize}
+		\item $f(x^{(2)}) = 0$: \hspace{10mm} dan is $x^{(2)} = x^*$.
+		\item $f(x^{(0)})f(x^{(2)}) < 0$: dan is $x^* \in (x^{(0)}, x^{(2)})$.
+		\item $f(x^{(1)})f(x^{(2)}) < 0$: dan is $x^* \in (x^{(1)}, x^{(2)})$.
+	\end{itemize}
+	Voor elk verkleind interval voert men de secant-stap opnieuw uit. De methode convergeert dus gegarandeerd. De iteratieformule is dus:
+	$$x^{(k+1)} \eq F_{\text{secant}}(x^{(k-1)}, x^{(k)})$$
+	\underline{\textbf{Methode}}\\
+	Er zijn twee stopcondities, elk gebaseerd op de oorspronkelijke methodes:
+	\begin{itemize}
+		\item Een maximum aantal iteratiestappen $K_{max}$. Deze kan niet berekend worden zoals bij de bissectiemethode, maar dient als een bovengrens voor de regentijd.
+		\item Een nauwkeurigheid van $|x^{(k+1)} - x^{(k)}| < 2\varepsilon$. Merk op dat de methode can convergeren zonder deze nauwkeurigheid te bereiken. Daarom de eerste stopconditie.
+	\end{itemize}
+	\underline{\textbf{Hoeveelheid rekenwerk}}\\
+	Slechts 1 functie-evaluatie per iteratiestap.
+	
+\section{Newton-Raphson methode (lineaire Hermite interpolatie)}
+	\underline{\textbf{Vereisten}}\\
+	Hier wordt eveneens een eerstegraads interpolerende veelterm gebruikt, maar deze keer een eerste-orde Hermite veelterm die door het punt $(x^{(k)}, f(x^{(k)})$ gaat raakt aan de kromme $f(x)$. De functie moet ook afleidbaar zijn.
+	$$y_{00} \eq f(x^{(0)}) + f'(x^{(0)})(x - x^{(0)})$$
+	\underline{\textbf{Methode}}\\
+	Het nulpunt hiervan wordt gebruikt om de volgende punten te berekenen:
+	\begin{equation}
+		x^{(k+1)} \eq x^{(k)} - \frac{f(x^{(k)})}{f'(x^{(k)})}
+	\end{equation}
+	Dit is een iteratieformule dat slecht van 1 vorig punt afhankelijk is:
+	$$x^{(k+1)} \eq F(x^{(k)})$$
+	\underline{\textbf{Stopconditie}}\\
+	Convergentie is niet gegarandeerd, maar als er convergeert gebeurt dit zeer snel. Het aantal beduidende cijfers neemt $\mathcal O(n^2)$ toe, en het algoritme stopt als de nauwkeurigheid bereikt is of het aantal iteratiestappen $K_{max}$ overschreden is.\v\\
+	\underline{\textbf{Hoeveelheid rekenwerk}}\\
+	Per evaluatiestap moet zowel de functie als de afgeleide berekend worden, wat kostelijk kan zijn.
+	
+\section{Methode van Whittaker}
+	\underline{\textbf{Vereisten}}\\
+	De afgeleide bij de Newton-Raphsonmethode kan men ook benaderen door een differentie ($f'(x^{(k)}) = f[x^{(k-1)}, x^{(k)}]$).\v\\
+	\underline{\textbf{Methode}}\\
+	Indien $x^{(0)}$ niet te ver van $x^*$ afligt, kan men veronderstellen dat $f'(x^{(k)}$ niet sterk zal vari\"{e}ren. Er geldt dan:
+	$$x^{(0)} \approx x^*: \h f'(x^{(k)}) = f'(x^{(0)}) = m$$
+	Men kan voor de benadering van de afgeleide $m_k =  f[x^{(k-1)}, x^{(k)}]$ nemen, en deze dan constant houden gedurende enkele iteraties.\v\\
+	\underline{\textbf{Stopcriterium}}\\
+	Zelfde als bij Newton-Raphson.\v\\
+	\underline{\textbf{Hoeveelheid rekenwerk}}\\
+	Slechts 1 functie-evaluatie per iteratiestap, en $m_k$ om de paar stappen berekenen (bv. om de 5 stappen).
+	
+
+\section{Methode van Muller}
+	\underline{\textbf{Vereisten}}\\
+	Steunt op een interpolerende veelterm van graad 2 (betere benadering maar nog steeds eenvoudig te berekenen). Er zijn dus 3 startwaarden nodig: $x^{(0)}$, $x^{(1)}$ en $x^{(2)}$. De interpolerende veelterm wordt gegeven door:
+	$$y_{210}(x) \eq f_2 + f[x^{(2)}, x^{(1)}](x - x^{(2)}) + f[x^{(2)}, x^{(1)}, x^{(0)}](x - x^{(2)})(x - x^{(1)})$$
+	\updown
+	\begin{equation}
+		y_{210}(x) \eq c + b(x - x^{(2)}) + a(x - x^{(2)})^2
+	\end{equation}
+		\begin{align*}
+		\text{met \h} c &= f_2\\
+		b &= f[x^{(2)}, x^{(1)}] + (x^{(2)} - x^{(2)})f[x^{(2)}, x^{(1)}, x^{(0)}] \H\H\\
+		a &= f[x^{(2)}, x^{(1)}, x^{(0)}]
+	\end{align*}
+	\underline{\textbf{Methode}}\\
+	De 2 nulpunten van deze parabool worden gegeven door:
+	\begin{equation}\label{nulpuntMuller}
+		w \eq x^{(2)} + \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+	\end{equation}
+	We stellen $x^{(3)}$ gelijk aan het nulpunt dat het dichtst bij $x^*$ ligt.
+	Om numerieke stabiliteit te behouden, herschrijven we \ref{nulpuntMuller} om catastrophic cancellation te voorkomen:
+	$$w \eq x^{(2)} + \frac{2c}{b\pm \sqrt{b^2 - 4ac}}$$
+	Om de breuk zo klein mogelijk te maken in absolute waarde, nemen we het onderstaand nulpunt voor het volgend iteratiepunt $x^{(3)}$:
+	\begin{equation}
+		x^{(3)} \eq x^{(2)} + \frac{2c}{b + \text{sign}(b)\sqrt{b^2 - 4ac}}
+	\end{equation}
+	\underline{\textbf{Stopconditie}}\\
+	Als $|x^{(2)} - x^{(1)}| < \varepsilon$, of als er geen convergentie optreedt na $K_{max}$ stappen.\v\\
+	\underline{\textbf{Hoeveelheid rekenwerk}}\\
+	Slechts 1 functie-evaluatie per iteratiestap, namelijk het berekenen van\\
+	$a_{k+1}, b_{k+1}, c_{k+1} \leftarrow a_k, b_k, c_k$. 
+	
+\subsection{Inverse interpolatie}
+	Interpolerende veeltermen gebruiken met een graad $n > 3$ stelt een paar problemen:
+	\begin{itemize}
+		\item Complexiteit van het berekenen van deze nulpunten.
+		\item Een keuze maken tussen deze nulpunten voor het volgend iteratiepunt.
+	\end{itemize}
+	Men kan oftewel overstappen naar rationele interpolatie, of inverse interpolatie gebruiken. TODO
+	
+\section{Methode van Halley (rationele interpolatie)}
+	\underline{\textbf{Vereisten}}\\
+	Rationele interpolerende functie gebruiken i.p.v. een veelterm. De graad van de teller kan laag gehouden worden en men heeft nog 3 vrijheidsgraden voor het bepalen van het nulpunt. Men gebruikt een eerste- of tweedegraads Hermite veelterm in teller en noemer:
+	\begin{equation}
+		y(x) \eq \frac{a(x - x^{(0)}) - b}{c(x-x^{(0)}) - d}
+	\end{equation}
+	Aangezien de functie niet veranderd als men de teller en noemer door een constante deelt, kan men $d = 1$ nemen als $d \neq 0$.
+	\begin{equation}\label{Halley}
+		y(x) \eq \frac{a(x - x^{(0)}) - b}{c(x-x^{(0)}) - 1}
+	\end{equation}
+	\underline{\textbf{Methode}}\\
+	Er blijven in \ref{Halley} nog 3 vrijheidsgraden over. De drie voorwaarden die we gaan opleggen zijn:
+	$$y(x^{(0)}) \eq f(x^{(0)}), \H y'(x^{(0)}) \eq f'(x^{(0)}), \H y''(x^{(0)}) \eq f''(x^{(0)})$$
+	Hieruit kunnen we de parameters $a$, $b$ en $c$ halen:
+	$$f(x^{(0)}) \eq b, \H f'(x^{(0)}) \eq bc - a, \H f''(x^{(0)}) \eq 2c(bc-a)$$
+	\updown
+	$$b\eq f(x^{(0)}),\H c\eq \frac{f''(x^{(0)})}{2f'(x^{(0)})}, \H a \eq \frac{f''(x^{(0)})f(x^{(0)})}{2f'(x^{(0)})} - f'(x^{(0)})$$
+	Aangezien het nulpunt van de benadering gegeven wordt door $x^{(0)} + \frac{b}{a}$, vinden we:
+	\begin{equation}
+		x^{(1)} = x^{(0)} - \frac{2f(x^{(0)})f'(x^{(0)})}{2(f(x^{(0)}))^2 - f(x^{(0)})f''(x^{(0)})}
+	\end{equation}
+	Ook hier is $x^{(k+1)} = F(x^{(k)})$ slechts afhankelijk van 1 vorig interpolatiepunt. Dit is de \textit{interpolatieformule van Halley}.\v\\
+	\underline{\textbf{Hoeveelheid rekenwerk}}\\
+	Aangezien deze methode gebruik maakt van de functiewaarde en de eerste en tweede afgeleide, zal deze zeer snel convergeren evenredig met $\mathcal{O}(n^3)$.
+	
+\section{Indeling van iteratieve methodes}
+	Een iteratiemethode is afhankelijk van een rij van iteratiefuncties $F_1$, $F_2$, \dots. Deze functies zijn op hun beurt afhankelijk van een rij van iteratiepunten $x^{(0)}$, $x^{(1)}$, \dots. Indien $x^{(k+1)}$ enkel afhankelijk is van de $s$ vorige iteratiepunten $x^{(k-s)}$ t/m $x^{(k)}$, noemt men dit een $s$-stapsmethode (de eeste punten zijn ook vaak overbodig aangezien ze slechts een ruwe schatting zijn). Zo is de secant-methode een 2-stapsmethode en de methode van Muller een 3-stapsmethode. 
+	
+	Wanneer $F_k$ onafhankelijk is van $k$, spreekt men van \textit{stationaire methodes}. Hieronder vallen de methodes van Newton-Raphson, Halley, Muller en de secant-methode. Ook de Whittaker-methode indien $m_k = m$ constant gehouden wordt. 
+	
+\section{Substitutiemethodes}
+	Stationaire \'{e}\'{e}n-stapsmethoden worden \textit{substitutiemethodes} genoemd, en zijn van de vorm:
+	$$x^{(k+1)} \eq F(x^{(k)})$$
+	Als $F$ continu is in de buurt van $x^*$ en als de methode convergeert, dan zal $x^*$ een oplossing zijn van de vergelijking:
+	$$x - F(x) = 0 \H\Leftrightarrow\H x = F(x)$$
+	M.a.w. wordt $x^*$ op zichzelf afgebeeld door $F$. Men zegt dan dat $x^*$ een \textit{vast punt} is van $F$. Substitutiemethodes worden daarom ook \textit{vaste puntsmethodes} genoemd.
+\subsection{Meetkundige interpretatie van substitutiemethodes}
+	Substitutiemethodes gaan dus op zoek naar een vast punt van de iteratiefunctie $F(x)$, oftewel het snijpunt van $F(x)$ en de bissectrice. Het berekenen van $x^{(k+1)} = F(x^{(k)})$ kan opgevat worden als het als een verticale beweging van $x^{(k)}$ naar de kromme $F(x)$, gevolgd door een horizontale beweging naar de bissectrice. De volgende mogelijkheden kunnen optreden:
+	\begin{itemize}
+		\item $0 < F'(x^*) < 1$: monotone convergentie, de rij $x^{(k)}$ nadert $x^*$ monotoon (\ref{fig:substitutiemethode}a).
+		\item $-1 < F'(x^*) < 0$: spiraalvormige convergentie, $x^{(k)}$ ligt afwisselend links en rechts van $x^*$ (\ref{fig:substitutiemethode}b).
+		\item $|F'(x^*)| > 1$: divergentie (\ref{fig:substitutiemethode}c en d).
+	\end{itemize}
+	
+	\begin{figure*}[h]
+		\includegraphics[height=6cm]{images/ConvDiv}
+		\caption{Substitutiemethode}
+		\label{fig:substitutiemethode}
+	\end{figure*}
+	In de eerste twee gevallen is $x^*$ een aantrekkingspunt, in het geval van divergentie een afstotingspunt.
+	
+\section{Convergentiesnelheid van rijen}
+	De convergentiefactor in de $k^{\text{de}}$ stap is:
+	\begin{equation}
+		\rho \eq \frac{\varepsilon^{(k)}}{\varepsilon^{(k-1)}}
+	\end{equation}
+	Voldoende voorwaarde opstellen opdat de methode van Whittaker gaat convergeren. 
+	
+	
+	 	 
+	 
+\end{document}
